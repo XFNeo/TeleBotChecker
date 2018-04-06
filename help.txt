@@ -1,0 +1,13 @@
+Перед командой вводить имя ПК, кроме Help и List%0AПример: PCName Proc%0A
+%0A*Cписок команд:*%0A```text
+Help - Показывает список команд%0A
+List - список ПК в сети%0A
+Stat - Выводит информацию о всех GPU%0A
+Proc - Проверяет Miner,MSIAfterburner,TeamViewer%0A
+Screen - Делает снимок экрана%0A
+Restart MSI - Перезапускает MSI Afterburner%0A
+Restart Miner - Перезапускает майнер%0A
+Restart TW- Перезапускает TeamViewer%0A
+Reboot PC - Перезагружает ПК%0A
+Exit - Отключает бота%0A
+```
