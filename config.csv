@@ -9,6 +9,7 @@
 "ProcessToCheck3","TeamViewer"
 "Token","BOT_TOKEN"
 "MyChatID","CHAT_ID"
+"Proxy","http://217.61.15.26:80"
 "temp_limit","67"
 "util_limit","95"
 "MailEnable","0"

@@ -2,7 +2,8 @@
 <#######################
 XFNeoBot
 25.01.18
-v 0.5
+v 0.6
+Добавлен прокси-сервер
 Добавлена отправка файлов - не работает.
 Добавлена возможность делать скриншоты
 Исправлено имя файла при получении
@@ -36,6 +37,8 @@ $ProcessToCheck3=$Config | where { $_.Parameter -eq "ProcessToCheck3" } | select
 $token=$Config | where { $_.Parameter -eq "token" } | select -ExpandProperty Text
 # ID чата
 $MyChatID=$Config | where { $_.Parameter -eq "MyChatID" } | select -ExpandProperty Text
+# Proxy Server
+$Proxy=$Config | where { $_.Parameter -eq "Proxy" } | select -ExpandProperty Text
 
 # путь до рабочей папки
 $Path = Split-Path -Path ($MyInvocation.MyCommand.Path) -Parent
@@ -90,7 +93,7 @@ function Bot-Listen {
 
     $URL = "https://api.telegram.org/bot$token/getUpdates?offset=$UpdateId&timeout=$ChatTimeout"
 
-    $Request = Invoke-WebRequest -Uri ( $URL ) -Method Get
+    $Request = Invoke-WebRequest -Uri ( $URL ) -Method Get -Proxy $Proxy
     $str = $Request.content
     $ok = ConvertFrom-Json $Request.content
     $str = $ok.result | select -First 1
@@ -143,7 +146,7 @@ function BotSay {
     if($MyChat){$URL = "https://api.telegram.org/bot$token/sendMessage?chat_id=$MyChatID&text=$text"}
     else {$URL = "https://api.telegram.org/bot$token/sendMessage?chat_id=$($Msg.Chat_id)&text=$text"}
 
-    $request = Invoke-WebRequest -Uri $URL -Method Post -ContentType "application/json;charset=utf-8" `
+    $request = Invoke-WebRequest -Uri $URL -Method Post -ContentType "application/json;charset=utf-8" -Proxy $Proxy `
                     -Body (ConvertTo-Json -Compress -InputObject $payload)
 }
 
@@ -156,14 +159,14 @@ function BotDownload {
         $FileID = $Msg.docFileID
         $FileName = $Msg.docFileName
         $URL = "https://api.telegram.org/bot$token/getFile?file_id=$FileID"
-        $Request = Invoke-WebRequest -Uri $URL
+        $Request = Invoke-WebRequest -Uri $URL -Proxy $Proxy
         
         $JSON = ConvertFrom-Json $Request.Content
         foreach ( $JSON in $((ConvertFrom-Json $Request.Content).result) ){
             $FilePath = $json.file_path
             $URL = "https://api.telegram.org/file/bot$token/$FilePath"
             $OutputFile = "$Path\documents\$FileName"
-            Invoke-WebRequest -Uri $URL -OutFile $OutputFile
+            Invoke-WebRequest -Uri $URL -OutFile $OutputFile -Proxy $Proxy
 
             BotSay -text "$FDownload. File name is ""$($JSON.file_path)""; size $($json.file_size) kb"
             log "получен файл: $($JSON.file_path) от $($msg.first_name) $($msg.last_name)из чата №$($msg.chat_id)"
@@ -179,7 +182,7 @@ function BotUpload {
 
     $file = Get-Content -Path $FileName
     $uri = "https://api.telegram.org/bot$token/sendDocument?chat_id=$($Msg.chat_id)&document"
-    Invoke-RestMethod -Method Post -Uri $uri -ContentType 'multipart/form-data' -Body [byte]$file
+    Invoke-RestMethod -Method Post -Uri $uri -ContentType 'multipart/form-data' -Body [byte]$file -Proxy $Proxy
 }
 
 <############################################################################################

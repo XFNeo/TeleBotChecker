@@ -22,6 +22,8 @@ $MailPort=$Config | where { $_.Parameter -eq "MailPort" } | select -ExpandProper
 $token=$Config | where { $_.Parameter -eq "token" } | select -ExpandProperty Text
 # ID чата
 $MyChatID=$Config | where { $_.Parameter -eq "MyChatID" } | select -ExpandProperty Text
+# Proxy Server
+$Proxy=$Config | where { $_.Parameter -eq "Proxy" } | select -ExpandProperty Text
 
 # файл лога
 $logFile = "$Path\log.txt"
@@ -67,7 +69,7 @@ function BotSay {
                 }
     $URL = "https://api.telegram.org/bot$token/sendMessage?chat_id=$MyChatID&text=$text"
     
-    $request = Invoke-WebRequest -Uri $URL -Method Post -ContentType "application/json;charset=utf-8" `
+    $request = Invoke-WebRequest -Uri $URL -Method Post -ContentType "application/json;charset=utf-8" -Proxy $Proxy `
                     -Body (ConvertTo-Json -Compress -InputObject $payload)
 }
 
